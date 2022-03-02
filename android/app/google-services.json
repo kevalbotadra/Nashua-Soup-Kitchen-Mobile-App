@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "871660197591",
+    "project_id": "nsks-a707f",
+    "storage_bucket": "nsks-a707f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871660197591:android:8a4ed96cf2a4b914350292",
+        "android_client_info": {
+          "package_name": "kevalbotadra.com.nsks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "871660197591-bofadtlkjpirtcgrjlv78p4jnecpm06a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUqoB_aCYvY2h-ZPNAsI7q11AuEhNUYM0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "871660197591-bofadtlkjpirtcgrjlv78p4jnecpm06a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
