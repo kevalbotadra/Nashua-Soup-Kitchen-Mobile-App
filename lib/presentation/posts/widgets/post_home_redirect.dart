@@ -4,7 +4,7 @@ import 'package:nsks/data/providers/post_provider.dart';
 import 'package:nsks/data/repositories/post_repository.dart';
 import 'package:nsks/logic/blocs/posts/post_bloc.dart';
 import 'package:nsks/logic/blocs/posts/post_event.dart';
-import 'package:nsks/presentation/posts/screens/post_page.dart';
+import 'package:nsks/presentation/posts/post_home.dart';
 
 class PostPageRedirect extends StatelessWidget {
   @override
@@ -15,7 +15,7 @@ class PostPageRedirect extends StatelessWidget {
       alignment: Alignment.center,
     child: BlocProvider<PostBloc>(
         create: (context) => PostBloc(postRepository)..add(GetPosts()),
-        child: PostPage(),
+        child: PostHome(),
       ),
     );
   }

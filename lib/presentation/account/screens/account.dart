@@ -1,36 +1,29 @@
-import 'dart:io';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:nsks/data/models/post.dart';
 import 'package:nsks/data/models/user.dart';
-import 'package:nsks/data/providers/post_provider.dart';
-import 'package:nsks/data/repositories/post_repository.dart';
-import 'package:nsks/logic/blocs/phone/auth/phone_auth_bloc.dart';
-import 'package:nsks/logic/blocs/phone/auth/phone_auth_event.dart';
-import 'package:nsks/logic/blocs/posts/post_bloc.dart';
-import 'package:nsks/logic/blocs/posts/post_event.dart';
-import 'package:nsks/logic/blocs/posts/post_state.dart';
+import 'package:nsks/data/providers/account_provider.dart';
+import 'package:nsks/data/repositories/account_repository.dart';
+import 'package:nsks/helpers/constants.dart';
+import 'package:nsks/logic/blocs/account/account_bloc.dart';
+import 'package:nsks/logic/blocs/account/account_event.dart';
+import 'package:nsks/logic/blocs/account/account_state.dart';
 import 'package:nsks/presentation/account/screens/settings.dart';
 import 'package:nsks/presentation/account/widgets/volunteer_listing.dart';
-import 'package:nsks/helpers/constants.dart';
-import 'package:nsks/presentation/posts/screens/post_detail.dart';
-import 'package:nsks/presentation/posts/widgets/post_list_redirect.dart';
 import 'package:nsks/presentation/widgets/generics/loading_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AccountRedirect extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final postRepository = new PostRepository(new PostProvider());
+    final accountRepository = new AccountRepository(new AccountProvider());
 
     return Container(
       alignment: Alignment.center,
-      child: BlocProvider<PostBloc>(
-        create: (context) => PostBloc(postRepository)..add(GetAccount()),
+      child: BlocProvider<AccountBloc>(
+        create: (context) => AccountBloc(accountRepository)..add(GetAccount()),
         child: AccountPage(),
       ),
     );
@@ -44,54 +37,28 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-          child: BlocConsumer<PostBloc, PostState>(
+          child: BlocConsumer<AccountBloc, AccountState>(
         listener: (context, state) {
-          if (state is PostAccepted) {
-            BlocProvider.of<PostBloc>(context).add(GetAccount());
+          if (state is AccountFailure) {
+            BlocProvider.of<AccountBloc>(context).add(GetAccount());
             Flushbar(
-              title: "Success",
-              backgroundColor: Colors.green,
+              title: "Failure",
+              backgroundColor: Colors.red,
               flushbarPosition: FlushbarPosition.TOP,
-              message: "Accepted Volunteer Position",
+              message: state.message,
               icon: Icon(
-                Icons.check,
+                Icons.close,
                 size: 28.0,
-                color: COLOR_WHITE,
+                color: Colors.white,
               ),
               duration: Duration(seconds: 2),
             )..show(context);
           }
         },
         builder: (context, state) {
-          if (state is PostLoading) {
-            return NSKSLoading();
-          } else if (state is AccountRetrieved) {
+          if (state is AccountRetrieved) {
             return AccountDetail(user: state.user);
-          } else if (state is GoToPostsPage) {
-            return PostPageRedirect();
-          } else if (state is GoToPostDetailPage) {
-            return PostDetail(post: state.post, screen: "Account");
-          } else if (state is GoToSettingsPage) {
-            return SettingsPage();
-          } else if (state is PostFailure) {
-            return Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(state.error),
-                TextButton(
-                  style: ButtonStyle(),
-                  child: Text('Retry'),
-                  onPressed: () {
-                    BlocProvider.of<PhoneAuthenticationBloc>(context)
-                        .add(LoggedOut());
-                  },
-                )
-              ],
-            ));
           }
-
           return NSKSLoading();
         },
       )),
@@ -175,8 +142,10 @@ class _AccountDetailState extends State<AccountDetail> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        BlocProvider.of<PostBloc>(context)
-                            .add(NavigateToSettingsPage());
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SettingsPage()));
                       },
                     ),
                   ),
@@ -304,7 +273,8 @@ class _AccountDetailState extends State<AccountDetail> {
                     itemBuilder: (context, index) {
                       return VolunteerListing(
                           post: getPostsByVolunteerByDate(
-                              widget.user.volunteeredPosts, "Upcoming")[index]);
+                              widget.user.volunteeredPosts, "Upcoming")[index],
+                              user: widget.user,);
                     })
                 : Column(
                     children: [
@@ -347,7 +317,8 @@ class _AccountDetailState extends State<AccountDetail> {
                     itemBuilder: (context, index) {
                       return VolunteerListing(
                           post: getPostsByVolunteerByDate(
-                              widget.user.volunteeredPosts, "Finished")[index]);
+                              widget.user.volunteeredPosts, "Finished")[index],
+                              user: widget.user,);
                     })
                 : Column(
                     children: [
@@ -362,6 +333,7 @@ class _AccountDetailState extends State<AccountDetail> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 150,)
           ]),
         ),
       ),

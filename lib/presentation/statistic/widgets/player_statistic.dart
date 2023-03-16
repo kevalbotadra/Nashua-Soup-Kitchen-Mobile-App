@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nsks/data/models/user.dart';
 import 'package:nsks/helpers/constants.dart';
 
+String removeDecimalZeroFormat(double n) {
+    return n.toStringAsFixed(n.truncateToDouble() == n ? 0 : 1);
+  }
+
 class PlayerStatistc extends StatelessWidget {
-  final String hours;
-  final String name;
-  final String imageUrl;
+  final NsksUser user;
   final String placement;
   const PlayerStatistc(
       {Key? key,
-      required this.hours,
-      required this.name,
-      required this.imageUrl,
+      required this.user,
       required this.placement})
       : super(key: key);
 
@@ -49,7 +50,7 @@ class PlayerStatistc extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          name,
+                          user.name,
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -57,7 +58,7 @@ class PlayerStatistc extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          hours,
+                          removeDecimalZeroFormat(user.hours),
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
@@ -72,7 +73,7 @@ class PlayerStatistc extends StatelessWidget {
                   left: 0,
                   child: CircleAvatar(
                     backgroundColor: COLOR_GREY,
-                    backgroundImage: NetworkImage(imageUrl),
+                    backgroundImage: NetworkImage(user.pfpUrl),
                     radius: 25,
                   ),
                 ),

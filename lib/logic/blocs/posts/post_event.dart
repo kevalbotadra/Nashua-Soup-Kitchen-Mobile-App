@@ -20,11 +20,33 @@ class CreatePost extends PostEvent {
   final TimeOfDay endTime;
   final File imageFile;
   final String location;
+  final String personToNotify;
 
-  CreatePost({required this.title, required this.body, required this.hours, required this.startDate, required this.startTime, required this.endDate, required this.endTime, required this.imageFile, required this.location});
+  CreatePost(
+      {required this.title,
+      required this.body,
+      required this.hours,
+      required this.startDate,
+      required this.startTime,
+      required this.endDate,
+      required this.endTime,
+      required this.imageFile,
+      required this.location, 
+      required this.personToNotify});
 
   @override
-  List<Object> get props => [title, body, hours, startDate, startTime, endDate, endTime, imageFile, location];
+  List<Object> get props => [
+        title,
+        body,
+        hours,
+        startDate,
+        startTime,
+        endDate,
+        endTime,
+        imageFile,
+        location,
+        personToNotify
+      ];
 }
 
 class DeletePost extends PostEvent {
@@ -38,7 +60,6 @@ class DeletePost extends PostEvent {
 
 class AcceptPost extends PostEvent {
   final String id;
-  
 
   AcceptPost({required this.id});
 

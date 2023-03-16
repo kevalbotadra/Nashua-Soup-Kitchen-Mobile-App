@@ -4,7 +4,7 @@ import 'package:nsks/data/providers/statistic_provider.dart';
 import 'package:nsks/data/repositories/statistic_repository.dart';
 import 'package:nsks/logic/blocs/statistic/statistic_bloc.dart';
 import 'package:nsks/logic/blocs/statistic/statistic_event.dart';
-import 'package:nsks/presentation/posts/screens/statistic.dart';
+import 'package:nsks/presentation/statistic/statistic.dart';
 
 class StatisticRedirect extends StatelessWidget {
   @override

@@ -1,38 +1,105 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:nsks/data/models/post.dart';
+import 'package:nsks/data/models/user.dart';
+import 'package:nsks/data/providers/post_provider.dart';
+import 'package:nsks/data/repositories/post_repository.dart';
 import 'package:nsks/logic/blocs/posts/post_bloc.dart';
 import 'package:nsks/logic/blocs/posts/post_event.dart';
 import 'package:nsks/helpers/constants.dart';
+import 'package:nsks/logic/blocs/posts/post_state.dart';
+
+class PostDetailRedirect extends StatelessWidget {
+  final Post post;
+  final NsksUser user;
+  final String screen;
+  const PostDetailRedirect(
+      {Key? key, required this.post, required this.user, required this.screen})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => PostBloc(new PostRepository(new PostProvider())),
+      child: PostDetailPage(post: post, user: user, screen: screen),
+    );
+  }
+}
+
+class PostDetailPage extends StatelessWidget {
+  final Post post;
+  final NsksUser user;
+  final String screen;
+  const PostDetailPage(
+      {Key? key, required this.post, required this.user, required this.screen})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<PostBloc, PostState>(
+      listener: (context, state) {
+        if (state is PostAccepted) {
+          Navigator.pop(context);
+          Flushbar(
+            title: "Post Accepted",
+            backgroundColor: Colors.green,
+            flushbarPosition: FlushbarPosition.TOP,
+            message: "Succesfully Accepted Volunteer Post",
+            icon: Icon(
+              Icons.check,
+              size: 28.0,
+              color: COLOR_WHITE,
+            ),
+            duration: Duration(seconds: 2),
+          )..show(context);
+          BlocProvider.of<PostBloc>(context).add(GetPosts());
+        }
+      },
+      builder: (context, state) {
+        return PostDetail(post: post, user: user, screen: screen);
+      },
+    );
+  }
+}
 
 class PostDetail extends StatelessWidget {
   final Post post;
+  final NsksUser user;
   final String screen;
-  const PostDetail({Key? key, required this.post, required this.screen})
+  const PostDetail(
+      {Key? key, required this.post, required this.user, required this.screen})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     void _onBackButtonPressed() {
-      if (screen == "PostsPage") {
-        BlocProvider.of<PostBloc>(context).add(NavigateToPostsPage());
-      } else {
-        BlocProvider.of<PostBloc>(context).add(GetAccount());
+      Navigator.pop(context);
+    }
+
+    bool isNotVolunteered() {
+      for (NsksUser volunteer in post.volunteers) {
+        if (volunteer.uid == user.uid) {
+          return false;
+        }
       }
+
+      return true;
     }
 
     return SafeArea(
-      top: true,
+      top: false,
+      bottom: false,
       child: Scaffold(
         body: Container(
           child: SingleChildScrollView(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 10.0),
+                padding: const EdgeInsets.only(left: 8.0, right: 10.0, top: 40),
                 child: Row(
                   children: [
                     SizedBox(
@@ -64,6 +131,7 @@ class PostDetail extends StatelessWidget {
                             .add(AcceptPost(id: post.uniqueId));
                       },
                       child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
                         height: 40,
                         width: 100,
                         decoration: BoxDecoration(
@@ -73,7 +141,7 @@ class PostDetail extends StatelessWidget {
                         ),
                         child: Center(
                           child: AutoSizeText(
-                            "Volunteer",
+                            isNotVolunteered() ? "Volunteer" : "Volunteered",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
@@ -180,8 +248,8 @@ class PostDetail extends StatelessWidget {
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
-                                      DateFormat('EEEE MMM dd, yyyy')
-                                          .format(DateTime.parse(post.startDate)),
+                                      DateFormat('EEEE MMM dd, yyyy').format(
+                                          DateTime.parse(post.startDate)),
                                       style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.w400,
                                         fontSize: 14,
@@ -190,8 +258,8 @@ class PostDetail extends StatelessWidget {
                                     ),
                                     Text(
                                       DateFormat('h:mma')
-                                              .format(
-                                                  DateTime.parse(post.startDate))
+                                              .format(DateTime.parse(
+                                                  post.startDate))
                                               .replaceAll("AM", "am")
                                               .replaceAll("PM", "pm") +
                                           " - " +

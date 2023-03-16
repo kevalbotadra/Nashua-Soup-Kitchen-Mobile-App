@@ -19,6 +19,7 @@ class AccountRepository {
     DocumentReference doc = users.doc(userInfo!.uid);
     DocumentSnapshot snapshot = await doc.get();
 
+
     List<Post> volunteerPosts = await getPostsbyVolunteer(snapshot["uid"]);
     
     NsksUser finalUser = NsksUser.fullFromSnapshot(snapshot, volunteerPosts);

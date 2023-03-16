@@ -45,7 +45,7 @@ class PostProvider {
 
   Future<Map<String, dynamic>?> getPostByUid(String uid) async {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection("posts").doc(uid).get();
+        await firestore.collection("posts").doc(uid).get(); 
 
     return snapshot.data();
   }
@@ -61,6 +61,7 @@ class PostProvider {
     List<String> tags = const [],
     List<String> volunteers = const [],
     required String location,
+    required String personToNotify,
   }) async {
     String imageFileUrl = await uploadImageToFirebase(imageFile);
 
@@ -76,6 +77,7 @@ class PostProvider {
       "tags": tags,
       "volunteers": volunteers,
       "location" : location,
+      "personToNotify" : personToNotify,
     });
 
     await firestore.collection("posts").doc(post.id).set({

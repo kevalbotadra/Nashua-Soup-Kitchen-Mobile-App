@@ -23,30 +23,10 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       yield* _mapGetPostsToState(event);
     }
 
-    // if (event is DeletePost) {
-    //   yield* _mapDeletePostToState(event);
-    // }
 
     if (event is AcceptPost) {
       yield* _mapAcceptPostToState(event);
     }
-
-    if (event is GetAccount) {
-      yield* _mapGetAccountToState(event);
-    }
-
-    if (event is NavigateToDetailPage) {
-      yield* _mapNavigateToDetailPageToState(event);
-    }
-
-    if (event is NavigateToPostsPage) {
-      yield* _mapNavigateToPostsPageToState(event);
-    }
-
-    if (event is NavigateToSettingsPage){
-      yield* _mapNavigateToSettingsPageToState(event);
-    }
-
 
   }
 
@@ -63,6 +43,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           endTime: event.endTime,
           imageFile: event.imageFile,
           location: event.location,
+          personToNotify: event.personToNotify,
           );
       yield PostCreated();
     } on PostException catch (e) {
@@ -88,18 +69,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  // Stream<PostState> _mapDeletePostToState(DeletePost event) async* {
-  //   yield PostLoading();
-  //   try {
-  //     await _postRepository.deletePost(event.id);
-  //     yield PostDeleted();
-  //   } on PostException catch (e) {
-  //     yield PostFailure(error: e.message);
-  //   } catch (err) {
-  //     yield PostFailure(error: err.toString());
-  //   }
-  // }
-
   Stream<PostState> _mapAcceptPostToState(AcceptPost event) async* {
     yield PostLoading();
     try {
@@ -111,44 +80,5 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       yield PostFailure(error: err.toString());
     }
   }
-
-  Stream<PostState> _mapGetAccountToState(GetAccount event) async* {
-    yield PostLoading();
-    try {
-      NsksUser user = await _postRepository.getAccountDetails();
-      yield AccountRetrieved(user: user);
-    } on PostException catch (e) {
-      yield PostFailure(error: e.message);
-    } catch (err) {
-      yield PostFailure(error: err.toString());
-    }
-  }
-
-  Stream<PostState> _mapNavigateToDetailPageToState(
-      NavigateToDetailPage event) async* {
-    yield PostLoading();
-    try {
-      Post post = await _postRepository.getPostByUid(event.uid);
-      yield GoToPostDetailPage(post: post);
-    } catch (e) {
-      print(e.toString());
-      yield PostFailure(error: "Something unexpected happened.");
-    }
-    
-  }
-
-  Stream<PostState> _mapNavigateToPostsPageToState(
-      NavigateToPostsPage event) async* {
-    yield GoToPostsPage();
-  }
-
-  Stream<PostState> _mapNavigateToSettingsPageToState(
-      NavigateToSettingsPage event) async* {
-    yield GoToSettingsPage();
-  }
-
-  // Stream<PostState> _mapNavigateToOtherAccountPageToState(){
-
-  // }
 
 }

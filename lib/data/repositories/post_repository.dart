@@ -85,6 +85,7 @@ class PostRepository {
     required TimeOfDay endTime,
     required File imageFile,
     required String location,
+    required String personToNotify,
   }) async {
     Timestamp createdAtStamp = dateTimeToTimestamp(DateTime.now());
 
@@ -105,6 +106,7 @@ class PostRepository {
         tags: [],
         volunteers: [],
         location: location,
+        personToNotify: personToNotify,
         );
   }
 }

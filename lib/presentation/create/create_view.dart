@@ -1,33 +1,14 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:nsks/data/providers/post_provider.dart';
-import 'package:nsks/data/repositories/post_repository.dart';
 import 'package:nsks/helpers/constants.dart';
 import 'package:nsks/logic/blocs/posts/post_bloc.dart';
 import 'package:nsks/logic/blocs/posts/post_event.dart';
 import 'package:nsks/logic/blocs/posts/post_state.dart';
-import 'package:nsks/presentation/widgets/generics/loading_screen.dart';
-
-class CreatePageRedirect extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final postRepository = new PostRepository(new PostProvider());
-
-    return Container(
-      alignment: Alignment.center,
-      child: BlocProvider<PostBloc>(
-        create: (context) => PostBloc(postRepository),
-        child: CreatePage(),
-      ),
-    );
-  }
-}
 
 class CreatePage extends StatelessWidget {
   const CreatePage({Key? key}) : super(key: key);
@@ -36,8 +17,20 @@ class CreatePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<PostBloc, PostState>(
       listener: (context, state) {
-        if (state is PostCreated){
+        if (state is PostCreated) {
           Navigator.pop(context);
+          Flushbar(
+            title: "Post Created",
+            backgroundColor: Colors.green,
+            flushbarPosition: FlushbarPosition.TOP,
+            message: "Succesfully Created Volunteer Post",
+            icon: Icon(
+              Icons.check,
+              size: 28.0,
+              color: COLOR_WHITE,
+            ),
+            duration: Duration(seconds: 2),
+          )..show(context);
         }
       },
       builder: (context, state) {
@@ -77,7 +70,9 @@ class _CreateFormState extends State<CreateForm> {
   TextEditingController hours = new TextEditingController();
   TextEditingController location = new TextEditingController();
 
-
+  bool person1 = false;
+  bool person2 = false;
+  bool person3 = false;
 
   List<Step> createSteps() => [
         Step(
@@ -119,6 +114,56 @@ class _CreateFormState extends State<CreateForm> {
                     border: OutlineInputBorder(),
                     labelText: 'Hours Value',
                   ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        Checkbox(
+                          value: person1,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              this.person1 = value!;
+                              this.person2 = false;
+                              this.person3 = false;
+                            });
+                          },
+                        ),
+                        Text("Michael"),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Checkbox(
+                          value: person2,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              this.person1 = false;
+                              this.person2 = value!;
+                              this.person3 = false;
+                            });
+                          },
+                        ),
+                        Text("Carol"),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Checkbox(
+                          value: person3,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              this.person1 = false;
+                              this.person2 = false;
+                              this.person3 = value!;
+                            });
+                          },
+                        ),
+                        Text("June"),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -472,11 +517,20 @@ class _CreateFormState extends State<CreateForm> {
                   currentStep: _activeStepIndex,
                   steps: createSteps(),
                   onStepContinue: () {
+                    print(_activeStepIndex);
                     if (_activeStepIndex < (createSteps().length - 1)) {
                       setState(() {
                         _activeStepIndex += 1;
                       });
                     } else {
+                      String person = "";
+                      if (person1) {
+                        person = "Michael";
+                      } else if (person2) {
+                        person = "Carol";
+                      } else if (person3) {
+                        person = "June";
+                      }
                       BlocProvider.of<PostBloc>(context).add(CreatePost(
                         title: title.text,
                         body: body.text,
@@ -487,6 +541,7 @@ class _CreateFormState extends State<CreateForm> {
                         endTime: _endTime,
                         imageFile: imageFile,
                         location: location.text,
+                        personToNotify: person,
                       ));
                     }
                   },
@@ -542,3 +597,6 @@ class _CreateFormState extends State<CreateForm> {
         ));
   }
 }
+
+
+

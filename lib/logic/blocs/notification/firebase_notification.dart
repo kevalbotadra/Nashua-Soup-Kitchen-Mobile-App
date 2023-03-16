@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -13,13 +15,24 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  print('background message ${message.notification!.body}');
+  // AwesomeNotifications().createNotificationFromJsonData(message.data);
 }
 
 class FirebaseNotifications {
   initialize() async {
     await Firebase.initializeApp();
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    print("FCM is " + fcmToken.toString());
+
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true, // Required to display a heads up notification
+      badge: true,
+      sound: true,
+    );
 
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -40,6 +53,7 @@ class FirebaseNotifications {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print(message.data);
       if (Platform.isAndroid) {
         RemoteNotification? notification = message.notification;
 
@@ -82,7 +96,7 @@ class FirebaseNotifications {
               0, '', '', groupNotificationDetailsPlatformSpefics);
         }
       } else if (Platform.isIOS) {
-        // FirebaseMessaging.instance.setF
+        print(message);
         RemoteNotification? notification = message.notification;
         IOSNotificationDetails iOSNotificationDetails = IOSNotificationDetails(
             presentAlert: true, presentBadge: true, presentSound: true);
@@ -93,6 +107,17 @@ class FirebaseNotifications {
         flutterLocalNotificationsPlugin.show(notification.hashCode,
             notification!.title, notification.body, notificationDetails);
       }
+
+      AwesomeNotifications().initialize(null, [
+        NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic notifications',
+          channelDescription: 'Notification channel for basic tests',
+          defaultColor: const Color(0xFF9D50DD),
+          ledColor: Colors.white,
+          playSound: true,
+        )
+      ]);
     });
   }
 

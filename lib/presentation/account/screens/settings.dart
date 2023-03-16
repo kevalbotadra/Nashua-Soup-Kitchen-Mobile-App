@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +9,7 @@ import 'package:nsks/logic/blocs/posts/post_bloc.dart';
 import 'package:nsks/logic/blocs/posts/post_event.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({ Key? key }) : super(key: key);
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,7 @@ class SettingsPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            BlocProvider.of<PostBloc>(context).add(GetAccount());
+            Navigator.pop(context);
           },
         ),
       ),
@@ -41,15 +40,15 @@ class SettingsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextButton(
-                    onPressed: () {
-                      BlocProvider.of<PhoneAuthenticationBloc>(context)
-                          .add(LoggedOut());
-                    },
-                    child: Text("Log Out",
-                        style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: COLOR_GREEN))),
+                  onPressed: () {
+                    BlocProvider.of<PhoneAuthenticationBloc>(context)
+                        .add(LoggedOut());
+                  },
+                  child: Text("Log Out",
+                      style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: COLOR_GREEN))),
             ],
           ),
         ),

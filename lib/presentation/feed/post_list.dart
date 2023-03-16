@@ -8,13 +8,14 @@ import 'package:nsks/data/models/user.dart';
 import 'package:nsks/logic/blocs/posts/post_bloc.dart';
 import 'package:nsks/logic/blocs/posts/post_event.dart';
 import 'package:nsks/helpers/constants.dart';
-import 'package:nsks/presentation/posts/create/create_view.dart';
-import 'package:nsks/presentation/posts/widgets/post_card.dart';
+import 'package:nsks/presentation/create/create_view.dart';
+import 'package:nsks/presentation/create/widgets/create_view_redirect.dart';
+import 'package:nsks/presentation/feed/widgets/post_card.dart';
 
-class PostList extends StatelessWidget {
+class Feed extends StatelessWidget {
   final List<Post> posts;
   final NsksUser user;
-  const PostList({Key? key, required this.posts, required this.user})
+  const Feed({Key? key, required this.posts, required this.user})
       : super(key: key);
 
   @override
@@ -118,7 +119,7 @@ class PostList extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                      "Here are some recent posts...",
+                      "Here are some recent events...",
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -133,7 +134,7 @@ class PostList extends StatelessWidget {
                           shrinkWrap: true,
                           itemCount: posts.length,
                           itemBuilder: (context, index) {
-                            return PostCard(post: posts[index]);
+                            return PostCard(post: posts[index], user: user,);
                           })
                       : Center(
                           child: Container(
@@ -147,12 +148,11 @@ class PostList extends StatelessWidget {
         ),
       );
     } else {
-      return SafeArea(
-        child: Scaffold(
+      return Scaffold(
           appBar: AppBar(
-            toolbarHeight: 110,
+            toolbarHeight: 80,
             title: Padding(
-              padding: EdgeInsets.only(top: 55),
+              padding: EdgeInsets.only(top: 40),
               child: Text(
                 "Home",
                 style: GoogleFonts.poppins(
@@ -222,7 +222,7 @@ class PostList extends StatelessWidget {
                             shrinkWrap: true,
                             itemCount: posts.length,
                             itemBuilder: (context, index) {
-                              return PostCard(post: posts[index]);
+                              return PostCard(post: posts[index], user: user,);
                             })
                         : Center(
                             child: Container(
@@ -234,8 +234,7 @@ class PostList extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      );
+        );
     }
   }
 }

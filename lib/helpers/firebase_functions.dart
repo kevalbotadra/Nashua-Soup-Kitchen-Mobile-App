@@ -48,10 +48,13 @@ Future<List<Post>> getPostsbyVolunteer(String uid) async {
     });
   });
 
+
+
   for (Map<String, dynamic> post in postsMetaData) {
     for (String volunteerUid in post["volunteers"]) {
       if (volunteerUid == uid) {
-        volunteerPosts.add(Post.fromJson(post));
+        List<NsksUser> volunteers = await getVolunteersByPost(post);
+        volunteerPosts.add(Post.fromMap(post, volunteers));
       }
     }
   }
@@ -61,7 +64,7 @@ Future<List<Post>> getPostsbyVolunteer(String uid) async {
 
 Future<String> uploadImageToFirebase(File imageFile) async {
   String filename = imageFile.path;
-  Reference ref = FirebaseStorage.instance.ref(imageFile.path);
+  Reference ref = FirebaseStorage.instance.ref(filename);
   await ref.putFile(
     imageFile,
   );

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nsks/data/models/post.dart';
 import 'package:nsks/data/models/user.dart';
 import 'package:nsks/helpers/constants.dart';
 import 'package:nsks/logic/blocs/statistic/statistic_bloc.dart';
 import 'package:nsks/logic/blocs/statistic/statistic_state.dart';
-import 'package:nsks/presentation/posts/widgets/player_statistic.dart';
+import 'package:nsks/presentation/statistic/widgets/player_statistic.dart';
 import 'package:nsks/presentation/widgets/generics/loading_screen.dart';
 
 class StatisticPage extends StatefulWidget {
@@ -260,10 +259,7 @@ class StatisticView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return PlayerStatistc(
                           placement: (index + 4).toString(),
-                          name: runnerUps[index].name,
-                          hours:
-                              removeDecimalZeroFormat(runnerUps[index].hours),
-                          imageUrl: runnerUps[index].pfpUrl,
+                          user: runnerUps[index],
                         );
                       },
                     )

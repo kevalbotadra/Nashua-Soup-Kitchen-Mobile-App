@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nsks/data/models/post.dart';
-import 'package:nsks/logic/blocs/posts/post_bloc.dart';
-import 'package:nsks/logic/blocs/posts/post_event.dart';
+import 'package:nsks/data/models/user.dart';
 import 'package:nsks/helpers/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:nsks/presentation/detail/post_detail.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
-  const PostCard({Key? key, required this.post}) : super(key: key);
+  final NsksUser user;
+  const PostCard({Key? key, required this.post, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(13),
       child: GestureDetector(
-        onTap: (){
-          BlocProvider.of<PostBloc>(context).add(NavigateToDetailPage(uid: post.uniqueId));
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      PostDetailRedirect(post: post, user: user, screen: "PostsPage")));
         },
         child: Container(
           child: Column(
@@ -27,7 +31,8 @@ class PostCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Image.asset("assets/images/logo.png", height: 20, width: 20),
+                    Image.asset("assets/images/app-logo-big.png",
+                        height: 20, width: 20),
                     SizedBox(
                       width: 8,
                     ),
